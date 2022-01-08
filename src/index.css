@@ -1,0 +1,43 @@
+/* body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+} */
+
+body {
+  font: 14px "Century Gothic", Futura, sans-serif;
+  margin: 20px;
+}
+
+h1 {
+  font: 30px "Century Gothic", Futura, sans-serif;
+}
+
+h2 {
+  font: 20px "Century Gothic", Futura, sans-serif;
+}
+
+textarea {
+  border: 1px solid rgb(90, 90, 90); 
+  padding: 5px;
+  height: 100px;
+  width: 500px;
+}
+
+
+/* .input-area {
+  display: flex;
+  flex-direction: row;
+}
+
+.names-list {
+  margin-left: 400px;
+} */
