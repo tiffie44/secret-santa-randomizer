@@ -19,14 +19,14 @@ class SecretSantaRandomizer extends React.Component {
     this.md = new Remarkable();
     this.handleChange = this.handleChange.bind(this);
     this.state = {
-      // Store current input value
       value: '',
       assignment: [],
+      showAssignment: false, 
     };
   }
 
   handleChange(e) {
-    this.setState({value: e.target.value});
+    this.setState({value: e.target.value, showAssignment: false});
   }
 
   randomize() {
@@ -39,14 +39,14 @@ class SecretSantaRandomizer extends React.Component {
       desc.push(<li>{namesList[i]}'s secret santee is {assignment[i]}</li>);
     }
 
-    this.setState({assignment: desc});
+    this.setState({assignment: desc, showAssignment: true});
   }
 
   render() {
     return (
       <div className='Input'> 
         <h1>Secret Santa Randomizer</h1>
-        <p>Enter a comma-separated list of names for the secret santa. </p>
+        <p>Enter a comma-separated list of names for the secret santa.</p>
         <textarea
           id="input-area"
           onChange={this.handleChange}
@@ -55,13 +55,36 @@ class SecretSantaRandomizer extends React.Component {
         <p>The currently entered people will appear alphabetically below. </p>
         <NamesList input={this.state.value}/>
         <button onClick={() => this.randomize()}> Randomize </button>
-        <p>Here is your randomized assignment!</p>
-        <ul>{this.state.assignment}</ul>
+        {this.state.showAssignment && <AssignmentOutput assignment={this.state.assignment}></AssignmentOutput>}
        </div>
     );
   }
 
 }
+
+class AssignmentOutput extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { showAssignmentText: false }
+  }
+  
+  toggleText() {
+    this.setState({showAssignmentText: !this.state.showAssignmentText});
+  }
+
+  render() {
+    let buttonText = this.state.showAssignmentText ? 'Hide' : 'Show';
+
+    return (
+      <div>
+        <p>Click here to view your randomized assignment!</p>
+        <button onClick={() => this.toggleText()}>{buttonText}</button>
+        {this.state.showAssignmentText && (<ul>{this.props.assignment}</ul>)}
+      </div>
+    );
+  }
+}
+
 
 class NamesList extends React.Component {
   render() {
@@ -144,6 +167,10 @@ function generateAssignment(namesList) {
   // Return the assignment permutation
   return assignment
 }
+
+/* Create text files for each santa containing 
+*  the name of their secret santee.
+*/
 
 // ========================================
 
