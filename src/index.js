@@ -6,8 +6,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-
 import { Remarkable } from 'remarkable';
+import { saveAs } from 'file-saver';
+import { JSZip } from 'jszip'
 
 // *************************************************
 //                   Main Code
@@ -21,6 +22,7 @@ class SecretSantaRandomizer extends React.Component {
     this.state = {
       value: '',
       assignment: [],
+      assignmentDesc: [],
       showAssignment: false, 
     };
   }
@@ -39,10 +41,15 @@ class SecretSantaRandomizer extends React.Component {
       desc.push(<li>{namesList[i]}'s secret santee is {assignment[i]}</li>);
     }
 
-    this.setState({assignment: desc, showAssignment: true});
+    this.setState({
+      assignment: assignment,
+      assignmentDesc: desc,
+      showAssignment: true
+    });
   }
 
   render() {
+    const namesList = parseInput(this.state.value);
     return (
       <div className='Input'> 
         <h1>Secret Santa Randomizer</h1>
@@ -55,8 +62,14 @@ class SecretSantaRandomizer extends React.Component {
         <p>The currently entered people will appear alphabetically below. </p>
         <NamesList input={this.state.value}/>
         <button onClick={() => this.randomize()}> Randomize </button>
-        {this.state.showAssignment && <AssignmentOutput assignment={this.state.assignment}></AssignmentOutput>}
-       </div>
+
+        {this.state.showAssignment && 
+        <AssignmentOutput 
+          assignment={this.state.assignmentDesc}
+          santas={namesList}
+          santees={this.state.assignment}
+        />}
+      </div>
     );
   }
 
@@ -72,6 +85,19 @@ class AssignmentOutput extends React.Component {
     this.setState({showAssignmentText: !this.state.showAssignmentText});
   }
 
+  save() {
+    const numPeople = this.props.santas.length;
+    // Generate blobs for each pairing / text file
+    for (let i = 0; i < numPeople; i++) {
+      const currSanta = this.props.santas[i];
+      const currSantee = this.props.santees[i];
+      const message = `Hello ${currSanta}! Your secret santa person is ${currSantee}.`;
+
+      const blob = new Blob([message], {type: 'text/plain'});
+      saveAs(blob, `${currSanta}.txt`);
+    }
+  }
+
   render() {
     let buttonText = this.state.showAssignmentText ? 'Hide' : 'Show';
 
@@ -80,6 +106,9 @@ class AssignmentOutput extends React.Component {
         <p>Click here to view your randomized assignment!</p>
         <button onClick={() => this.toggleText()}>{buttonText}</button>
         {this.state.showAssignmentText && (<ul>{this.props.assignment}</ul>)}
+
+        <p>Alternatively, click here to download a zip file containing text files of the form "(santa name).txt", each containing said person's secret santee.</p>
+        <button onClick={() => this.save()}>Download Assignment Files </button>
       </div>
     );
   }
@@ -110,11 +139,13 @@ class NamesList extends React.Component {
 //               Helper functions
 // *************************************************
 
-// Return a sorted list of names given the input
+/*
+* Return a sorted list of names given the input
+*/
 function parseInput(input) {
   const namesList = input.split(',');
 
-  // Remove whitespace before and after name for proper sorting
+  // Remove whitespace before and after each name for proper sorting
   for (let i = 0; i < namesList.length; i++) {
     namesList[i] = namesList[i].trim();
   }
@@ -129,12 +160,19 @@ function parseInput(input) {
 }
 
 
-// Return a random integer between min (included) and max (excluded)
+/* 
+* Return a random integer between min (included) and max (excluded)
+*/ 
 function getRandInt(min, max) {
   return Math.floor(Math.random() * (max - min) ) + min;
 }
 
 
+/*
+* Return an array containing a permutation of <namesList> 
+* representing a valid assignment of secret santees for each person
+* in the list when viewed in parallel.
+*/
 function generateAssignment(namesList) {
   const numNames = namesList.length;
   let cnt = 0;
@@ -164,13 +202,8 @@ function generateAssignment(namesList) {
     }
   }
   
-  // Return the assignment permutation
   return assignment
 }
-
-/* Create text files for each santa containing 
-*  the name of their secret santee.
-*/
 
 // ========================================
 
