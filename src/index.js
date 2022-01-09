@@ -8,7 +8,8 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import { Remarkable } from 'remarkable';
 import { saveAs } from 'file-saver';
-import { JSZip } from 'jszip'
+import * as JSZip from 'jszip';
+
 
 // *************************************************
 //                   Main Code
@@ -86,20 +87,24 @@ class AssignmentOutput extends React.Component {
   }
 
   save() {
+    var zip = new JSZip();
+
+    // Create a text file for each person containing their assigned santee
     const numPeople = this.props.santas.length;
-    // Generate blobs for each pairing / text file
     for (let i = 0; i < numPeople; i++) {
       const currSanta = this.props.santas[i];
       const currSantee = this.props.santees[i];
-      const message = `Hello ${currSanta}! Your secret santa person is ${currSantee}.`;
-
-      const blob = new Blob([message], {type: 'text/plain'});
-      saveAs(blob, `${currSanta}.txt`);
+      const message = `Hello ${currSanta}!\nYour secret santa person is ${currSantee}.`;
+      zip.file(`${currSanta}.txt`, message);
     }
+
+    zip.generateAsync({type: 'blob'}).then(function(content) {
+      saveAs(content, "secret-santa-files.zip");
+    });
   }
 
   render() {
-    let buttonText = this.state.showAssignmentText ? 'Hide' : 'Show';
+    const buttonText = this.state.showAssignmentText ? 'Hide' : 'Show';
 
     return (
       <div>
@@ -152,7 +157,7 @@ function parseInput(input) {
   namesList.sort();
   
   // Remove empty first entry that occurs during typing 
-  if (namesList.length > 0 && namesList[0].trim() == '') {
+  if (namesList.length > 0 && namesList[0].trim() === '') {
     namesList.shift();
   }
 
@@ -184,7 +189,7 @@ function generateAssignment(namesList) {
 
     // If the last santa is forced to get themselves,
     // swap santees with a random person from the list 
-    if (cnt == numNames - 1 && !assignment.includes(santa)) {
+    if (cnt === numNames - 1 && !assignment.includes(santa)) {
       const randIndex = getRandInt(0, numNames - 1);
       const swapSantee = assignment[randIndex];
       assignment.splice(randIndex, 1, santa);
@@ -196,7 +201,7 @@ function generateAssignment(namesList) {
 
     // A pairing is valid if the santee has not already been assigned
     // and the santee is not the secret santa themselves
-    else if (santa != santee && !assignment.includes(santee)) {
+    else if (santa !== santee && !assignment.includes(santee)) {
       assignment.push(santee);
       cnt = cnt + 1;
     }
