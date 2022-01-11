@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/secret-santa-randomizer/static/css/main.b0cd2ebe.css",
+    "main.js": "/secret-santa-randomizer/static/js/main.f29a9b0e.js",
+    "index.html": "/secret-santa-randomizer/index.html",
+    "main.b0cd2ebe.css.map": "/secret-santa-randomizer/static/css/main.b0cd2ebe.css.map",
+    "main.f29a9b0e.js.map": "/secret-santa-randomizer/static/js/main.f29a9b0e.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.b0cd2ebe.css",
+    "static/js/main.f29a9b0e.js"
+  ]
+}
