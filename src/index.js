@@ -22,8 +22,8 @@ class SecretSantaRandomizer extends React.Component {
     this.handleNameChange = this.handleNameChange.bind(this);
     this.handleExclusionChange = this.handleExclusionChange.bind(this);
     this.state = {
-      nameValue: "",
-      exclusionValue: "",
+      nameInput: "",
+      exclusionInput: "",
       assignment: [],
       assignmentDesc: [],
       showAssignment: false, 
@@ -31,17 +31,17 @@ class SecretSantaRandomizer extends React.Component {
   }
 
   handleNameChange(e) {
-    this.setState({nameValue: e.target.value, showAssignment: false});
+    this.setState({nameInput: e.target.value, showAssignment: false});
   }
 
   handleExclusionChange(e) {
-    this.setState({exclusionValue: e.target.value, showAssignment: false});
+    this.setState({exclusionInput: e.target.value, showAssignment: false});
   }
 
   randomize() {
-    const [flag, assignment] = generateAssignment(this.state.nameValue, this.state.exclusionValue);
+    const [flag, assignment] = generateAssignment(this.state.nameInput, this.state.exclusionInput);
     const desc = [];
-    const namesList = parseInput(this.state.nameValue);
+    const namesList = parseNames(this.state.nameInput);
 
     if (flag) {
       // Create a description for each assigned pairing
@@ -63,7 +63,7 @@ class SecretSantaRandomizer extends React.Component {
   }
 
   render() {
-    const namesList = parseInput(this.state.nameValue);
+    const namesList = parseNames(this.state.nameInput);
     return (
       <div className="Input"> 
         <h1>Secret Santa Randomizer</h1>
@@ -74,9 +74,11 @@ class SecretSantaRandomizer extends React.Component {
           placeholder="Enter names here."
         />
         <p>The currently entered people will appear alphabetically below. </p>
-        <NamesList input={this.state.nameValue}/>
+        <div className='namesList'>
+          <NamesList input={this.state.nameInput}/>
+        </div>
 
-        <p>If there are people that a specific person would <i>not</i> like to be assigned to (e.g. to avoid repetition from last year), please enter the exclusions as a backslash-separated list below in the format: "Santa:Person1,Person2", etc. For example, </p>
+        <p>If there are people that a specific person would not like to be assigned to, please enter the exclusions as a backslash-separated list below in the format: "Santa : Santee1, Santee2", etc. For example, </p>
         <ul>
           <li>"Julia : Isaac" specifies that Julia will not be assigned to Isaac.</li>
           <li>"Julia : Isaac, Tiffanie / Tiffanie : Isaac" specifies that Julia will not be assigned to Isaac nor Tiffanie, and Tiffanie will not be assigned to Isaac.</li>
@@ -86,10 +88,11 @@ class SecretSantaRandomizer extends React.Component {
           onChange={this.handleExclusionChange}
           placeholder="Enter any exclusion lists here."
         />
-        <p>The currently entered exclusion lists will appear below. </p>
-        <ExclusionList input={this.state.exclusionValue}></ExclusionList>
+        <p>The currently entered exclusion lists will appear below. Also, only names that were entered above will appear. </p>
+        <div className='exclusionList'>
+          <ExclusionList nameInput={this.state.nameInput} exclusionInput={this.state.exclusionInput}></ExclusionList>
+        </div>
 
-        <p>When all information is correct, click the button below to generate your secret santa assignment!</p>
         <button id="Randomize" onClick={() => this.randomize()}> Randomize </button>
 
         {this.state.showAssignment && 
@@ -107,7 +110,7 @@ class SecretSantaRandomizer extends React.Component {
 class ExclusionList extends React.Component {
   render() {
     // Split exclusion input into map of the exclusions
-    const santaToExclusions = parseExclusions(this.props.input); 
+    const santaToExclusions = parseExclusions(this.props.nameInput, this.props.exclusionInput); 
 
     // Create a message for each exclusion list
     const messages = [];
@@ -150,7 +153,7 @@ class AssignmentOutput extends React.Component {
     for (let i = 0; i < numPeople; i++) {
       const currSanta = this.props.santas[i];
       const currSantee = this.props.santees[i];
-      const message = `Hello ${currSanta}!\nYour secret santa person is ${currSantee}.`;
+      const message = `Hello, ${currSanta}!\nYour secret santee is ${currSantee}.`;
       zip.file(`${currSanta}.txt`, message);
     }
 
@@ -166,7 +169,9 @@ class AssignmentOutput extends React.Component {
       <div>
         <p>Click here to view your randomized assignment!</p>
         <button onClick={() => this.toggleText()}>{buttonText}</button>
-        {this.state.showAssignmentText && (<ul>{this.props.assignment}</ul>)}
+        <div className='assignmentText'>
+          {this.state.showAssignmentText && (<ul>{this.props.assignment}</ul>)}
+        </div>
 
         <p>Alternatively, click here to download a zip file containing text files of the form "(santa name).txt", each containing said person's secret santee.</p>
         <button onClick={() => this.save()}>Download Assignment Files </button>
@@ -179,7 +184,7 @@ class AssignmentOutput extends React.Component {
 class NamesList extends React.Component {
   render() {
     // Split input into alphabetically sorted names
-    const namesList = parseInput(this.props.input);
+    const namesList = parseNames(this.props.input);
 
     // Map each inputted name to a list item containing the name
     const names = namesList.map((ele, ind) => {
@@ -196,22 +201,17 @@ class NamesList extends React.Component {
   }
 }
 
-// *************************************************
-//               Helper functions
-// *************************************************
 
-/* 
-* Return a random integer between min (included) and max (excluded)
-*/ 
-function getRandInt(min, max) {
-  return Math.floor(Math.random() * (max - min) ) + min;
-}
+// *************************************************
+//         Input parsing helper functions
+// *************************************************
 
 /*
 * Return a sorted list of names given the input
 */
-function parseInput(input) {
-  const namesList = input.split(',');
+function parseNames(nameInput) {
+
+  const namesList = nameInput.split(',');
 
   // Remove whitespace before and after each name for proper sorting
   for (let i = 0; i < namesList.length; i++) {
@@ -231,22 +231,34 @@ function parseInput(input) {
 * Return a map of (santa, list of santee) entries representing exclusions,
 * that is, a list of people that a given santa should not be assigned to.
 */
-function parseExclusions(input) {
+function parseExclusions(nameInput, exclusionInput) {
   // Split input into exclusions
   const santaToExclusions = new Map();
-  const exclusionStrings = input.split('/');
+  const exclusionStrings = exclusionInput.split('/');
+  const namesList = parseNames(nameInput);
 
-  const numExclusionLists = exclusionStrings.length;
-  for (let i = 0; i < numExclusionLists; i++) {
+  // Process every backslash-separated exclusion request
+  for (let i = 0; i < exclusionStrings.length; i++) {
     const curr = exclusionStrings[i].trim();
     const colon = curr.indexOf(':');
-
     if (colon === -1) continue;
 
-    // Separate string into santa and excluded santees
+    // Separate exclusion request into santa and excluded santees
     const santa = curr.slice(0, colon).trim();
     const santees = curr.slice(colon + 1);
-    const exclusions = parseInput(santees);
+    const exclusions = parseNames(santees);
+
+    // Only include santas that exist in the secret santa
+    if (!namesList.includes(santa)) continue;
+
+    // Only include santees that exist in the secret santa
+    // in the excluded list
+    for (let j = 0; j < exclusions.length; j++) {
+      if (!namesList.includes(exclusions[j])) {
+        exclusions.splice(j, 1);
+        j--; // all elements shift left
+      }
+    }
     
     // Add current entry to the list 
     santaToExclusions.set(santa, exclusions);
@@ -255,12 +267,23 @@ function parseExclusions(input) {
   return santaToExclusions;
 }
 
+
+// *************************************************
+//              Helper functions
+// *************************************************
+
+/* 
+* Return a random integer between min (included) and max (excluded)
+*/ 
+function getRandInt(min, max) {
+  return Math.floor(Math.random() * (max - min) ) + min;
+}
+
 /*
 * Return true if and only if santa1 and santa2 can swap assigned santees. 
 * That is, santa1 can be assigned to santee2 and santa2 can be assigned to santee1. 
 */
-function canSwapSantees(santa1, santee1, santa2, santee2, exclusionValue) {
-  const exclusionMap = parseExclusions(exclusionValue);
+function canSwapSantees(santa1, santee1, santa2, santee2, exclusionMap) {
   // CASE: the santa is equal to the santee
   if (santa1 === santee2 || santa2 === santee1) {
     return false;
@@ -284,9 +307,9 @@ function canSwapSantees(santa1, santee1, santa2, santee2, exclusionValue) {
 *         representing a valid assignment of secret santees for each person
 *         in the list when viewed in parallel (empty if (1) is false)
 */
-function generateAssignment(nameValue, exclusionValue) {
-  const namesList = parseInput(nameValue);
-  const exclusionMap = parseExclusions(exclusionValue);
+function generateAssignment(nameInput, exclusionInput) {
+  const namesList = parseNames(nameInput);
+  const exclusionMap = parseExclusions(nameInput, exclusionInput);
   const numNames = namesList.length;
   let cnt = 0;
   const assignment = [];
@@ -336,7 +359,7 @@ function generateAssignment(nameValue, exclusionValue) {
       const swapSanta = namesList[j];
       const swapSantee = assignment[j];
       
-      if (canSwapSantees(swapSanta, swapSantee, currSanta, currSantee, exclusionValue)) {
+      if (canSwapSantees(swapSanta, swapSantee, currSanta, currSantee, exclusionMap)) {
         assignment[j] = currSantee;
         assignment[i] = swapSantee;
         cannotSwap = false; // found person
