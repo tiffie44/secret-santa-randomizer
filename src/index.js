@@ -65,42 +65,61 @@ class SecretSantaRandomizer extends React.Component {
   render() {
     const namesList = parseNames(this.state.nameInput);
     return (
-      <div className="Input"> 
+      <div> 
         <h1>Secret Santa Randomizer</h1>
-        <p>Enter a comma-separated list of names for the secret santa.</p>
-        <textarea
-          id="input-area"
-          onChange={this.handleNameChange}
-          placeholder="Enter names here."
-        />
-        <p>The currently entered people will appear alphabetically below. </p>
-        <div className='namesList'>
-          <NamesList input={this.state.nameInput}/>
+
+        <div className='names'>
+          <div className='namesInput'>
+            <h2 id="namesHeader"> Names </h2>
+            <p>Enter a <em>comma-separated</em> list of names for the secret santa. For example,</p>
+            <ul className='example'>
+              <li>Tiffanie, Tiffany, Vanessa, Clover, Isaac, Joey, Julia, Natalie</li>
+              <li>tiffanie,vanessa,julia,joey</li>
+            </ul>
+            <p>Names are case-sensitive. Do not enter duplicate names.</p>
+            <textarea
+              id="input-area"
+              onChange={this.handleNameChange}
+              placeholder="Enter names here."
+            />
+          </div>
+          
+          <div className='namesOutput'>
+            <p>The currently entered people will appear alphabetically below. </p>
+            <div className='green'>
+              <NamesList input={this.state.nameInput}/>
+            </div>
+          </div>
         </div>
 
-        <p>If there are people that a specific person would not like to be assigned to, please enter the exclusions as a backslash-separated list below in the format: "Santa : Santee1, Santee2", etc. For example, </p>
-        <ul>
-          <li>"Julia : Isaac" specifies that Julia will not be assigned to Isaac.</li>
-          <li>"Julia : Isaac, Tiffanie / Tiffanie : Isaac" specifies that Julia will not be assigned to Isaac nor Tiffanie, and Tiffanie will not be assigned to Isaac.</li>
-        </ul>
-        <textarea
-          id="exclusion-area"
-          onChange={this.handleExclusionChange}
-          placeholder="Enter any exclusion lists here."
-        />
-        <p>The currently entered exclusion lists will appear below. Also, only names that were entered above will appear. </p>
-        <div className='exclusionList'>
-          <ExclusionList nameInput={this.state.nameInput} exclusionInput={this.state.exclusionInput}></ExclusionList>
+        <div className='exclusions'>
+          <h2 id="exclusionsHeader">Exclusions</h2>
+          <p>If there are people that a specific santa would <em>not</em> like to be assigned to, please enter the exclusions as a <em>backslash-separated</em> list below in the format: <span className='input'>Santa : Santee1, Santee2</span>, etc. For example, </p>
+          <ul className='example'>
+            <li> <span className='input'> Julia : Isaac</span> specifies that Julia will not be assigned to Isaac.</li>
+            <li> <span className='input'> Julia : Isaac, Tiffanie / Tiffanie : Isaac</span> specifies that Julia will not be assigned to Isaac nor Tiffanie, and Tiffanie will not be assigned to Isaac.</li>
+          </ul>
+          <textarea
+            id="exclusion-area"
+            onChange={this.handleExclusionChange}
+            placeholder="Enter any exclusion lists here."
+          />
+          <p>The currently entered exclusion lists will appear below. Only names that were entered in 'Names' above will appear. </p>
+          <div className='red'>
+            <ExclusionList nameInput={this.state.nameInput} exclusionInput={this.state.exclusionInput}></ExclusionList>
+          </div>
         </div>
 
-        <button id="Randomize" onClick={() => this.randomize()}> Randomize </button>
-
-        {this.state.showAssignment && 
-        <AssignmentOutput 
-          assignment={this.state.assignmentDesc}
-          santas={namesList}
-          santees={this.state.assignment}
-        />}
+        <div className='output'>
+        <h2>Output</h2>
+          <button id='randomize' onClick={() => this.randomize()}> Randomize </button>
+          {this.state.showAssignment && 
+          <AssignmentOutput  
+            assignment={this.state.assignmentDesc}
+            santas={namesList}
+            santees={this.state.assignment}
+          />}
+        </div>
       </div>
     );
   }
@@ -167,7 +186,7 @@ class AssignmentOutput extends React.Component {
 
     return (
       <div>
-        <p>Click here to view your randomized assignment!</p>
+        <p>Click here to view your randomized assignment.</p>
         <button onClick={() => this.toggleText()}>{buttonText}</button>
         <div className='assignmentText'>
           {this.state.showAssignmentText && (<ul>{this.props.assignment}</ul>)}
