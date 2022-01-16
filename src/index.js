@@ -76,7 +76,7 @@ class SecretSantaRandomizer extends React.Component {
               <li>Tiffanie, Tiffany, Vanessa, Clover, Isaac, Joey, Julia, Natalie</li>
               <li>tiffanie,vanessa,julia,joey</li>
             </ul>
-            <p>Names are case-sensitive. Do not enter duplicate names.</p>
+            <p>Names are case-sensitive. Duplicate names will be removed.</p>
             <textarea
               id="input-area"
               onChange={this.handleNameChange}
@@ -99,6 +99,7 @@ class SecretSantaRandomizer extends React.Component {
             <li> <span className='input'> Julia : Isaac</span> specifies that Julia will not be assigned to Isaac.</li>
             <li> <span className='input'> Julia : Isaac, Tiffanie / Tiffanie : Isaac</span> specifies that Julia will not be assigned to Isaac nor Tiffanie, and Tiffanie will not be assigned to Isaac.</li>
           </ul>
+          <p>Duplicate lists for the same santa will be removed (i.e. only the first list will be registered). </p>
           <textarea
             id="exclusion-area"
             onChange={this.handleExclusionChange}
@@ -230,20 +231,28 @@ class NamesList extends React.Component {
 */
 function parseNames(nameInput) {
 
-  const namesList = nameInput.split(',');
+  const names = nameInput.split(',');
 
   // Remove whitespace before and after each name for proper sorting
-  for (let i = 0; i < namesList.length; i++) {
-    namesList[i] = namesList[i].trim();
+  for (let i = 0; i < names.length; i++) {
+    names[i] = names[i].trim();
   }
-  namesList.sort();
+  names.sort();
   
   // Remove empty first entry that occurs during typing 
-  if (namesList.length > 0 && namesList[0].trim() === "") {
-    namesList.shift();
+  if (names.length > 0 && names[0].trim() === "") {
+    names.shift();
+  }
+  
+  // Remove any duplicate names
+  const uniqueNames = [];
+  for (let i = 0; i < names.length; i++) {
+    if (!uniqueNames.includes(names[i])) {
+        uniqueNames.push(names[i]);
+    }
   }
 
-  return namesList;
+  return uniqueNames;
 }
 
 /*
@@ -269,6 +278,9 @@ function parseExclusions(nameInput, exclusionInput) {
 
     // Only include santas that exist in the secret santa
     if (!namesList.includes(santa)) continue;
+
+    // Do not parse repeated exclusion lists
+    if (santaToExclusions.has(santa)) continue;
 
     // Only include santees that exist in the secret santa
     // in the excluded list
