@@ -12,12 +12,12 @@ import {parseExclusions} from './utils.js'
 class ExclusionSection extends React.Component {
     render () {
         return (
-            <div className='exclusions'>
+            <div id='exclusions'>
                 <h2 id="exclusionsHeader">Exclusions</h2>
                 <p>If there are people that a specific santa would <em>not</em> like to be assigned to, please enter the exclusions as a <em>backslash-separated</em> list below in the format: <span className='input'>Santa : Santee1, Santee2</span>, etc. For example, </p>
                 <ul className='example'>
-                    <li> <span className='input'> Julia : Isaac</span> specifies that Julia will not be assigned to Isaac.</li>
-                    <li> <span className='input'> Julia : Isaac, Tiffanie / Tiffanie : Isaac</span> specifies that Julia will not be assigned to Isaac nor Tiffanie, and Tiffanie will not be assigned to Isaac.</li>
+                    <li> <span className='input'> Julia : Isaac </span> specifies that Julia will not be assigned to Isaac.</li>
+                    <li> <span className='input'> Julia : Isaac, Tiffanie / Tiffanie : Isaac </span> specifies that Julia will not be assigned to Isaac nor Tiffanie, and Tiffanie will not be assigned to Isaac.</li>
                 </ul>
                 <p>Duplicate lists for the same santa will be removed (i.e. only the first list will be registered). </p>
                 <textarea id="exclusion-area"
@@ -25,7 +25,7 @@ class ExclusionSection extends React.Component {
                           placeholder="Enter any exclusion lists here."
                 />
                 <p>The currently entered exclusion lists will appear below. Only names that were entered in 'Names' above will appear. </p>
-                <div className='red'>
+                <div className='redBox'>
                 <ExclusionList nameInput={this.props.nameInput} 
                                 exclusionInput={this.props.exclusionInput}/>
                 </div>

@@ -8,9 +8,12 @@ import React from 'react';
 import './index.css';
 import { Remarkable } from 'remarkable';
 import {parseNames, generateAssignment } from './utils.js'
+
+import TopNav from './topnav.js'
 import NamesSection from './names.js';
 import ExclusionSection from './exclusions.js';
 import OutputSection from './output.js';
+
 
 class App extends React.Component {
   constructor(props) {
@@ -64,17 +67,28 @@ class App extends React.Component {
     const namesList = parseNames(this.state.nameInput);
     return (
       <div> 
+        <TopNav />
         <h1>Secret Santa Randomizer</h1>
-        <NamesSection onChange={this.handleNameChange} 
-                      nameInput = {this.state.nameInput} />
-        <ExclusionSection onChange={this.handleExclusionChange} 
-                          nameInput = {this.state.nameInput}
-                          exclusionInput = {this.state.exclusionInput} />
-        <OutputSection assignmentDesc = {this.state.assignmentDesc}
-                       assignment = {this.state.assignment}
-                       namesList = {namesList}
-                       showAssignment = {this.state.showAssignment}
-                       randomize = {this.randomize}/>
+        <div id="sections">
+          <div className="section">
+            <NamesSection onChange={this.handleNameChange} 
+                          nameInput = {this.state.nameInput} />
+          </div>
+          <div className="section">
+            <span id="anchor"></span>
+            <ExclusionSection onChange={this.handleExclusionChange} 
+                              nameInput = {this.state.nameInput}
+                              exclusionInput = {this.state.exclusionInput} />
+          </div>
+          <div className="section">
+            <span id="anchor"></span>
+            <OutputSection assignmentDesc = {this.state.assignmentDesc}
+                          assignment = {this.state.assignment}
+                          namesList = {namesList}
+                          showAssignment = {this.state.showAssignment}
+                          randomize = {this.randomize}/>
+          </div>
+        </div>
       </div>
     );
   }

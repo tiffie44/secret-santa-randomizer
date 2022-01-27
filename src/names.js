@@ -12,8 +12,8 @@ import {parseNames} from './utils.js'
 class NamesSection extends React.Component {
     render() {
         return (
-          <div className='names'>
-            <div className='namesInput'>
+          <div id="names">
+            <div className="namesInput">
               <h2 id="namesHeader"> Names </h2>
               <p>Enter a <em>comma-separated</em> list of names for the secret santa. For example,</p>
               <ul className='example'>
@@ -28,9 +28,9 @@ class NamesSection extends React.Component {
               />
             </div>
             
-            <div className='namesOutput'>
+            <div className="namesOutput">
               <p>The currently entered people will appear alphabetically below. </p>
-              <div className='green'>
+              <div className="greenBox">
                 <NamesList nameInput={this.props.nameInput} />
               </div>
             </div>

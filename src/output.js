@@ -12,9 +12,9 @@ import { saveAs } from 'file-saver';
 class OutputSection extends React.Component {
     render() {
         return (
-            <div className='output'>
+            <div id='output'>
                 <h2>Output</h2>
-                <button id='randomize' onClick={() => this.props.randomize()}> Randomize </button>
+                <button id='randomizeButton' onClick={() => this.props.randomize()}> Randomize </button>
                 {this.props.showAssignment && 
                 <AssignmentOutput  
                     assignment={this.props.assignmentDesc}

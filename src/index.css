@@ -1,19 +1,19 @@
 body {
   font: 14px "Arial", sans-serif;
-  margin-left: 20px;
-  margin-right: 20px;
+  margin: 0;  /* rewrite default margin to left-align */
 }
 
 h1 {
-  font: 40px "Brush Script MT", sans-serif;
-  margin-bottom: 0px;
+  font: 50px "Arial", sans-serif;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 90px; /* TODO: find better adjustment for header */
 }
 
 h2 {
-  font: 20px "Arial", sans-serif;
+  font: 25px "Arial", sans-serif;
+  font-weight: bold;
   text-align: center;
-  background-color: black;
-  color: white;
   padding: 5px
 }
 
@@ -21,40 +21,59 @@ textarea {
   border: 1px solid gray; 
   padding: 5px;
   height: 75px;
-  width: 90%
+  width: 99%
+}
+
+.topnav {  
+  overflow: hidden;
+  background-color: black;
+  position: fixed;  /* fixed when scrolling */
+  width: 100%;
+  top: 0;
+}
+
+.topnav a {
+  float: left;  /* display side-by-side */
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+a:hover {
+  color: gray;
+}
+
+h3 span {
+  position: absolute;
+  top: -15px;
+}
+
+#randomizeButton {
+  margin: 0 auto;
+  font: 50px;
 }
 
 button {
   padding: 5px;
 }
 
+#sections {
+  margin: 0 auto;
+  max-width: 750px;
+}
+
+.section {
+  margin-bottom: 100px;
+}
+
 #namesHeader {
-  background-color: green;
+  color: green;
 }
 
 #exclusionsHeader {
-  background-color: indianred;
-}
-
-#randomizeHeader {
-  background-color: gray;
-}
-
-.names {
-  float: left;
-  width: 30%;
-}
-
-.exclusions {
-  float: left;
-  width: 30%;
-  padding-left: 20px;
-}
-
-.output {
-  float: left;
-  width: 30%;
-  padding-left: 20px;
+  color: red;
 }
 
 .assignmentText {
@@ -68,23 +87,22 @@ button {
 .input {
   font: 14px "Courier New", sans-serif;
   color: black;
-  background-color: mistyrose; 
 }
 
 .example {
   color: gray;
 }
 
-.green {
+.greenBox {
   color: green;
   border: 1px solid green;
-  width: 90%;
+  width: 100%;
 }
 
-.red {
+.redBox {
   color: red;
   border: 1px solid red;
-  width: 90%;
+  width: 100%;
 }
 
 .relative {
